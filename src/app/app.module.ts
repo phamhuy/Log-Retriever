@@ -7,12 +7,14 @@ import { MaterialImports } from './app.material';
 import { HomeComponent } from './components/home/home.component';
 import { LogComponent } from './components/log/log.component';
 import { AppRoutingModule } from './app-routing.module';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LogComponent
+    LogComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
