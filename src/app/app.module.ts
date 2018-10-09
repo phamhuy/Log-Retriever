@@ -8,6 +8,7 @@ import { HomeComponent } from './components/home/home.component';
 import { LogComponent } from './components/log/log.component';
 import { AppRoutingModule } from './app-routing.module';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,9 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     BrowserModule,
     BrowserAnimationsModule,
     MaterialImports,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

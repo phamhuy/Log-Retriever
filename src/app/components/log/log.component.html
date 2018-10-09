@@ -1,3 +1,18 @@
-<p>
-  log works!
-</p>
+<mat-card class="mat-elevation-z3">
+  <form [formGroup]="form">
+    <!-- Log Config -->
+    <mat-card-actions>
+      <!-- Select Server -->
+      <mat-form-field>
+        <mat-select formControlName="serverSelect" (selectionChange)="onSelectServer()">
+          <mat-option *ngFor="let server of serverService.servers" value="{{server.name}}">{{server.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-actions>
+
+    <!-- Log Textbox -->
+    <mat-card-content>
+      content
+    </mat-card-content>
+  </form>
+</mat-card>
