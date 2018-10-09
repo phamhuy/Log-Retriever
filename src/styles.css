@@ -2,3 +2,9 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', sans-serif; }
+
+.center {
+  width: 80%;
+  margin: auto;
+  padding: 1em;
+}
