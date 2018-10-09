@@ -4,19 +4,24 @@
     <mat-card-actions>
       <!-- Select Server -->
       <mat-form-field>
-        <mat-select formControlName="serverSelect" (selectionChange)="onSelectServer()">
-          <mat-option *ngFor="let server of serverService.servers" value="{{server.name}}">{{server.name}}</mat-option>
+        <mat-select formControlName="serverSelect" (selectionChange)="getLog()">
+          <mat-option *ngFor="let server of logService.servers" value="{{server.name}}">{{server.name}}</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <!-- Select Log Type -->
-      <mat-checkbox *ngFor="let logType of serverService.logTypes" formControlName="{{logType}}">{{logType}}</mat-checkbox>
+      <!-- Select Log Types -->
+      <mat-checkbox *ngFor="let logType of logService.logTypes" formControlName="{{logType}}">{{logType}}</mat-checkbox>
 
+      <!-- Follow Checkbox -->
+      <section>
+        <mat-checkbox formControlName="follow" (change)="onChangeFollow($event)">Follow</mat-checkbox>
+      </section>
     </mat-card-actions>
+    <mat-divider></mat-divider>
 
     <!-- Log Textbox -->
     <mat-card-content>
-      content
+      <p>{{log}}</p>
     </mat-card-content>
   </form>
 </mat-card>

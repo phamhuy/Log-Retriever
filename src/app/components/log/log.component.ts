@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ServerService } from '@services';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { LogService } from '@services';
+import { MatCheckboxChange } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-log',
@@ -9,36 +11,58 @@ import { ServerService } from '@services';
   styleUrls: ['./log.component.css']
 })
 export class LogComponent implements OnInit {
-  form: FormGroup
+  form: FormGroup;
+  log: string;
+  logSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private serverService: ServerService
+    private logService: LogService
   ) { }
 
   ngOnInit() {
     // Build form
     this.form = this.fb.group({
-      serverSelect: ''
+      serverSelect: '',
+      follow: false
     })
-    for (let logType of this.serverService.logTypes) {
+    for (let logType of this.logService.logTypes) {
       this.form.addControl(logType, this.fb.control(true));
     }
 
     // Set server name
     const serverName = this.route.snapshot.paramMap.get('serverName');
     this.serverSelect.setValue(serverName);
+    this.getLog();
 
-    console.log(this.serverSelect.value);
+    // Init the log content
+    this.log = '';
+    this.getLog();
   }
 
   get serverSelect() {
-    return this.form.get('serverSelect');
+    return this.form.get('serverSelect') as FormControl;
   }
 
-  onSelectServer() {
-    console.log(this.form.get('INFO').value);
+  get follow() {
+    return this.form.get('follow') as FormControl;
+  }
+
+  onChangeFollow(change: MatCheckboxChange) {
+    if (change.checked) {
+      this.logSub = this.logService.getLog(this.serverSelect.value).subscribe(res => {
+        this.log += res.toString();
+      });
+    } else {
+      this.logSub.unsubscribe();
+    }
+  }
+
+  getLog() {
+    this.logService.getLog(this.serverSelect.value).subscribe(log => {
+      this.log = log;
+    });
   }
 
 }

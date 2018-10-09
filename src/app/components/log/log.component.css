@@ -8,8 +8,15 @@ mat-card-actions {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
 mat-checkbox {
   margin: 2em;
+}
+
+section {
+  position: absolute;
+  right: 1em;
+  bottom: 0;
 }
