@@ -18,10 +18,16 @@ export class LogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const serverName = this.route.snapshot.paramMap.get('serverName');
+    // Build form
     this.form = this.fb.group({
       serverSelect: ''
     })
+    for (let logType of this.serverService.logTypes) {
+      this.form.addControl(logType, this.fb.control(true));
+    }
+
+    // Set server name
+    const serverName = this.route.snapshot.paramMap.get('serverName');
     this.serverSelect.setValue(serverName);
 
     console.log(this.serverSelect.value);
@@ -32,7 +38,7 @@ export class LogComponent implements OnInit {
   }
 
   onSelectServer() {
-    console.log(this.serverSelect.value);
+    console.log(this.form.get('INFO').value);
   }
 
 }

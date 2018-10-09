@@ -8,6 +8,10 @@
           <mat-option *ngFor="let server of serverService.servers" value="{{server.name}}">{{server.name}}</mat-option>
         </mat-select>
       </mat-form-field>
+
+      <!-- Select Log Type -->
+      <mat-checkbox *ngFor="let logType of serverService.logTypes" formControlName="{{logType}}">{{logType}}</mat-checkbox>
+
     </mat-card-actions>
 
     <!-- Log Textbox -->
