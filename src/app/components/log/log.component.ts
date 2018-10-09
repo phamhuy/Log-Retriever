@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
 import { MatCheckboxChange } from '@angular/material';
 import { Subscription } from 'rxjs';
+import { Server } from '@models';
 
 @Component({
   selector: 'app-log',
@@ -14,6 +15,8 @@ export class LogComponent implements OnInit {
   form: FormGroup;
   log: string;
   logSub: Subscription;
+  servers: Server[];
+  logTypes: string[];
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +33,10 @@ export class LogComponent implements OnInit {
     for (let logType of this.logService.logTypes) {
       this.form.addControl(logType, this.fb.control(true));
     }
+
+    // Get list of servers and log types
+    this.servers = this.logService.servers;
+    this.logTypes = this.logService.logTypes;
 
     // Set server name
     const serverName = this.route.snapshot.paramMap.get('serverName');

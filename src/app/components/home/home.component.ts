@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LogService } from '@services';
+import { Server } from '@models';
 
 @Component({
   selector: 'app-home',
@@ -8,6 +9,7 @@ import { LogService } from '@services';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  servers: Server[];
 
   constructor(
     private router: Router,
@@ -15,6 +17,7 @@ export class HomeComponent implements OnInit {
     ) { }
 
   ngOnInit() {
+    this.servers = this.logService.servers;
   }
 
   onClick(serverName: string) {
