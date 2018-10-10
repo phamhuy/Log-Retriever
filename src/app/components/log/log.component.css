@@ -20,3 +20,7 @@ section {
   right: 1em;
   bottom: 0;
 }
+
+mat-card-content {
+  white-space: pre-line;
+}

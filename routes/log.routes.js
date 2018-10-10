@@ -21,9 +21,12 @@ module.exports = app => {
 
       // Run the command on the given server
       conn.exec(cmd, (err, stream) => {
-        if (err) throw err;
-        stream.stdout.on('data', data => {
-          res.write(data);
+        if (err) {
+          console.log('error =', err.message);
+          return;
+        }
+        stream.on('data', data => {
+          res.send(data);
           conn.end();
           console.log(`Successfully disconnected to ${serverName}`);
         })
@@ -38,36 +41,8 @@ module.exports = app => {
       passphrase: passphrase,
       privateKey: require('fs').readFileSync(logger_rsa)
     });
-  })
+  });
 
   app.get('/api/followLog/:serverName', (req, res) => {
-    const serverName = req.params.serverName;
-
-    // Define function for ready event
-    conn = conn.once('ready', () => {
-      console.log(`Successfully connected to ${serverName}`);
-
-      // Define command to be run on the given server
-      let cmd = `tail ${filename}`;
-
-      // Run the command on the given server
-      conn.exec(cmd, (err, stream) => {
-        if (err) throw err;
-        stream.stdout.on('data', data => {
-          res.write(data);
-          conn.end();
-          console.log(`Successfully disconnected to ${serverName}`);
-        })
-      });
-    });
-
-    // Connect to the server
-    console.log(`Connecting to server ${serverName}`);
-    conn.connect({
-      host: `${serverName}.${serverDomain}`,
-      username: username,
-      passphrase: passphrase,
-      privateKey: require('fs').readFileSync(logger_rsa)
-    });
-  })
+  });
 }

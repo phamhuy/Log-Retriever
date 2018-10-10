@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class LogService {
   servers: Server[];
   logTypes: string[];
-  baseUrl: string = 'http://localhost:4201/api';
+  baseUrl: string = 'http://localhost:5000';
 
   constructor(private http: HttpClient) {
     this.servers = [
@@ -27,9 +27,8 @@ export class LogService {
     ]
   }
 
-  getLog(serverName): Observable<string> {
-    return of('Hello World!');
-    // return this.http.get(`${this.baseUrl}/getLog/${serverName}`);
+  getLog(serverName): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/getLog/${serverName}`, {responseType: 'text'});
   }
 
   followLog(serverName): Observable<string> {

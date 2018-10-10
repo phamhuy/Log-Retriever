@@ -41,7 +41,6 @@ export class LogComponent implements OnInit {
     // Set server name
     const serverName = this.route.snapshot.paramMap.get('serverName');
     this.serverSelect.setValue(serverName);
-    this.getLog();
 
     // Init the log content
     this.log = '';
@@ -67,8 +66,8 @@ export class LogComponent implements OnInit {
   }
 
   getLog() {
-    this.logService.getLog(this.serverSelect.value).subscribe(log => {
-      this.log = log;
+    this.logService.getLog(this.serverSelect.value).subscribe(res => {
+      this.log = res;
     });
   }
 
