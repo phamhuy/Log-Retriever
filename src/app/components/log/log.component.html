@@ -14,14 +14,14 @@
 
       <!-- Follow Checkbox -->
       <section>
-        <mat-checkbox formControlName="follow" (change)="onChangeFollow($event)">Follow</mat-checkbox>
+        <mat-checkbox formControlName="follow" (change)="getLog()">Follow</mat-checkbox>
       </section>
     </mat-card-actions>
     <mat-divider></mat-divider>
 
     <!-- Log Textbox -->
     <mat-card-content>
-      <p>{{log}}</p>
+      <textarea #logBox matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="20"></textarea>
     </mat-card-content>
   </form>
 </mat-card>

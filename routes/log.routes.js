@@ -14,7 +14,7 @@ module.exports = app => {
 
     // Define function for ready event
     conn = conn.once('ready', () => {
-      console.log(`Successfully connected to ${serverName}`);
+      console.log(`Connected to ${serverName} successfully`);
 
       // Define command to be run on the given server
       let cmd = `tail ${filename}`;
@@ -28,7 +28,7 @@ module.exports = app => {
         stream.on('data', data => {
           res.send(data);
           conn.end();
-          console.log(`Successfully disconnected to ${serverName}`);
+          console.log(`Disconnected to ${serverName} successfully`);
         })
       });
     });
@@ -44,5 +44,47 @@ module.exports = app => {
   });
 
   app.get('/api/followLog/:serverName', (req, res) => {
+    const serverName = req.params.serverName;
+
+    // Define function for ready event
+    conn = conn.once('ready', () => {
+      console.log(`Connected to ${serverName} successfully`);
+
+      // Define command to be run on the given server
+      let cmd = `tail -f ${filename}`;
+
+      // Run the command on the given server
+      conn.exec(cmd, (err, stream) => {
+        if (err) {
+          console.log('error =', err.message);
+          return;
+        }
+
+        stream.stdout.pipe(res);
+        // stream.on('data', data => {
+        //   (new Buffer(data, 'base64')).pipe(res);
+        // })
+      });
+    });
+
+    // Define function for end event
+    conn = conn.once('end', () => {
+      // res.end();
+      console.log(`Disconnected to ${serverName} successfully`);
+    });
+
+    // Connect to the server
+    console.log(`Connecting to server ${serverName}`);
+    conn.connect({
+      host: `${serverName}.${serverDomain}`,
+      username: username,
+      passphrase: passphrase,
+      privateKey: require('fs').readFileSync(logger_rsa)
+    });
+  });
+
+  app.get('/api/stopLog/:serverName', (req, res) => {
+    conn.end();
+    res.end();
   });
 }

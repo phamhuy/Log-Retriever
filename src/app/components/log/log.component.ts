@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
-import { MatCheckboxChange } from '@angular/material';
 import { Subscription } from 'rxjs';
 import { Server } from '@models';
 
@@ -12,8 +11,9 @@ import { Server } from '@models';
   styleUrls: ['./log.component.css']
 })
 export class LogComponent implements OnInit {
+  @ViewChild('logBox') logBox: ElementRef
+
   form: FormGroup;
-  log: string;
   logSub: Subscription;
   servers: Server[];
   logTypes: string[];
@@ -43,7 +43,6 @@ export class LogComponent implements OnInit {
     this.serverSelect.setValue(serverName);
 
     // Init the log content
-    this.log = '';
     this.getLog();
   }
 
@@ -55,20 +54,24 @@ export class LogComponent implements OnInit {
     return this.form.get('follow') as FormControl;
   }
 
-  onChangeFollow(change: MatCheckboxChange) {
-    if (change.checked) {
-      this.logSub = this.logService.getLog(this.serverSelect.value).subscribe(res => {
-        this.log += res.toString();
-      });
-    } else {
-      this.logSub.unsubscribe();
-    }
-  }
-
   getLog() {
-    this.logService.getLog(this.serverSelect.value).subscribe(res => {
-      this.log = res;
-    });
+    if (this.follow.value) { // If follow is checked
+      this.logSub = this.logService.followLog(this.serverSelect.value).subscribe(res => {
+        this.logBox.nativeElement.innerHTML = res;
+        this.logBox.nativeElement.focus();
+        // console.log('length =', this.logBox.nativeElement.value.length);
+      });
+    } else { // If follow is unchecked
+      if (this.logSub) { // If unchecking follow
+        this.logSub.unsubscribe();
+        this.logSub = null;
+        this.logService.stopLog(this.serverSelect.value).subscribe(null);
+      } else { // If changing the server only
+        this.logService.getLog(this.serverSelect.value).subscribe(res => {
+          this.logBox.nativeElement.innerHTML = res;
+        });
+      }
+    }
   }
 
 }

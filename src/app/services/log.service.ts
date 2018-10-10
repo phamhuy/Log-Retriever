@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Server } from '@models';
-import { Observable, of, from } from 'rxjs';
-import { delay, concatMap } from 'rxjs/internal/operators';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -31,15 +30,22 @@ export class LogService {
     return this.http.get(`${this.baseUrl}/api/getLog/${serverName}`, {responseType: 'text'});
   }
 
-  followLog(serverName): Observable<string> {
-    let s = [];
-    for (let i = 0; i < 100; i++) {
-      s.push(i);
-    }
+  followLog(serverName): Observable<any> {
+    const observer = new Subject();
+    const xhttp = new XMLHttpRequest();
 
-    return from(s).pipe(
-      concatMap(val => of(val).pipe(delay(1000)))
-    );
-    // return this.http.get(`${this.baseUrl}/followLog/${serverName}`);
+    xhttp.onreadystatechange = () => {
+      if (xhttp.status == 200) {
+        observer.next(xhttp.responseText);
+      }
+    }
+    xhttp.open('GET', `${this.baseUrl}/api/followLog/${serverName}`);
+    xhttp.send();
+
+    return observer.asObservable();
+  }
+
+  stopLog(serverName): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/stopLog/${serverName}`);
   }
 }

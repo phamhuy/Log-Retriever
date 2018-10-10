@@ -2,6 +2,7 @@ mat-card {
   width: 90%;
   margin: auto;
   margin-top: 2em;
+  overflow: hidden;
 }
 
 mat-card-actions {
@@ -23,4 +24,10 @@ section {
 
 mat-card-content {
   white-space: pre-line;
+  overflow: auto;
+  height: 65vh;
+}
+
+textarea.mat-input-element {
+  overflow: hidden;
 }
