@@ -59,10 +59,15 @@ export class LogComponent implements OnInit {
     this.getLog();
   }
 
+  updateLogContent(newContent) {
+    const contentElement = <HTMLElement> this.logBox.nativeElement;
+    contentElement.innerHTML = newContent;
+    contentElement.scrollTop = contentElement.scrollHeight;
+  }
+
   getLog() {
     this.logService.getLog(this.serverSelect.value).subscribe(res => {
-      this.logBox.nativeElement.innerHTML = res;
-      this.logBox.nativeElement.scrollTop = this.logBox.nativeElement.scrollHeight;
+      this.updateLogContent(res);
 
       // Notify user
       this.snackBar.open('Get Log Successfully', null, { duration: 3000 });
@@ -72,8 +77,7 @@ export class LogComponent implements OnInit {
   followLog() {
     this.following = true;
     this.fowlloSubscription = this.logService.followLog(this.serverSelect.value).subscribe(res => {
-      this.logBox.nativeElement.innerHTML = res;
-      this.logBox.nativeElement.scrollTop = this.logBox.nativeElement.scrollHeight;
+      this.updateLogContent(res);
     });
 
     // Notify user

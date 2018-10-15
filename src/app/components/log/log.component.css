@@ -23,6 +23,7 @@ section {
 }
 
 mat-card-content {
+  padding-top: 1em;
   white-space: pre-line;
   overflow: auto;
   height: 65vh;
