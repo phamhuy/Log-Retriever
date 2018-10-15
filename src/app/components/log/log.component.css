@@ -27,7 +27,3 @@ mat-card-content {
   overflow: auto;
   height: 65vh;
 }
-
-textarea.mat-input-element {
-  overflow: hidden;
-}

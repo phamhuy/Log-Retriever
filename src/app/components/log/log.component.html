@@ -4,7 +4,7 @@
     <mat-card-actions>
       <!-- Select Server -->
       <mat-form-field>
-        <mat-select formControlName="serverSelect" (selectionChange)="getLog()">
+        <mat-select formControlName="serverSelect" (selectionChange)="onChangeServer()">
           <mat-option *ngFor="let server of servers" value="{{server.name}}">{{server.name}}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -22,8 +22,8 @@
     <mat-divider></mat-divider>
 
     <!-- Log Textbox -->
-    <mat-card-content>
-      <textarea #logBox matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="20"></textarea>
+    <mat-card-content #logBox>
+      <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="20"></textarea>
     </mat-card-content>
   </form>
 </mat-card>

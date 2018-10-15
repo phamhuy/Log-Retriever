@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
 import { Server } from '@models';
+import { MatSnackBar, MatCardContent } from '@angular/material';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-log',
@@ -10,17 +12,19 @@ import { Server } from '@models';
   styleUrls: ['./log.component.css']
 })
 export class LogComponent implements OnInit {
-  @ViewChild('logBox') logBox: ElementRef
+  @ViewChild('logBox') logBox: ElementRef;
 
   form: FormGroup;
   servers: Server[];
   logTypes: string[];
   following: boolean;
+  fowlloSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private logService: LogService
+    private logService: LogService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
@@ -48,22 +52,41 @@ export class LogComponent implements OnInit {
     return this.form.get('serverSelect') as FormControl;
   }
 
+  onChangeServer() {
+    if (this.following) {
+      this.unfollowLog();
+    }
+    this.getLog();
+  }
+
   getLog() {
     this.logService.getLog(this.serverSelect.value).subscribe(res => {
       this.logBox.nativeElement.innerHTML = res;
+      this.logBox.nativeElement.scrollTop = this.logBox.nativeElement.scrollHeight;
+
+      // Notify user
+      this.snackBar.open('Get Log Successfully', null, { duration: 3000 });
     });
   }
 
   followLog() {
-    this.logService.followLog(this.serverSelect.value).subscribe(res => {
-      this.following = true;
+    this.following = true;
+    this.fowlloSubscription = this.logService.followLog(this.serverSelect.value).subscribe(res => {
       this.logBox.nativeElement.innerHTML = res;
+      this.logBox.nativeElement.scrollTop = this.logBox.nativeElement.scrollHeight;
     });
+
+    // Notify user
+    this.snackBar.open('Following Log', null, { duration: 3000 });
   }
 
   unfollowLog() {
     this.logService.stopLog(this.serverSelect.value).subscribe(res => {
       this.following = false;
+      this.fowlloSubscription.unsubscribe();
+
+      // Notify user
+      this.snackBar.open('Unfollow Successfully', null, { duration: 3000 });
     });
   }
 
