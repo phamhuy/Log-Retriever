@@ -6,6 +6,8 @@ const passphrase = 'logger';
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
 
+const LOG_SIZE = 100;
+
 // Define servers and connections
 const serverNames = [
   'app-sti',
@@ -17,8 +19,6 @@ const conns = serverNames.reduce((result, server) => {
   result[server] = (new Client());
   return result;
 }, {})
-
-let prevStream = null;
 
 // Init connections
 for (let serverName in conns) {
@@ -49,7 +49,7 @@ module.exports = app => {
     const conn = conns[req.params.serverName];
 
     // Define command to be run on the given server
-    let cmd = `tail -n 50 ${filename}`;
+    let cmd = `tail -n ${LOG_SIZE} ${filename}`;
 
     // Run the command on the given server
     conn.exec(cmd, (err, stream) => {
@@ -67,7 +67,7 @@ module.exports = app => {
     const conn = conns[req.params.serverName];
 
     // Define command to be run on the given server
-    let cmd = `tail -n 50 -f ${filename}`;
+    let cmd = `tail -n ${LOG_SIZE} -f ${filename}`;
 
     // Run the command on the given server
     conn.exec(cmd, (err, stream) => {
@@ -76,7 +76,11 @@ module.exports = app => {
         return;
       }
 
-      stream.stdout.pipe(res);
+      try {
+        stream.stdout.pipe(res);
+      } catch(err) {
+        res.end();
+      }
     });
 
     // Define function for unfollow event
