@@ -14,7 +14,9 @@
 
       <!-- Follow Checkbox -->
       <section>
-        <mat-checkbox formControlName="follow" (change)="getLog()">Follow</mat-checkbox>
+        <button mat-raised-button color="primary" (click)="getLog()">Get Log</button>
+        <button *ngIf="!following" mat-raised-button color="primary" (click)="followLog()">Follow</button>
+        <button *ngIf="following" mat-raised-button color="accent" (click)="unfollowLog()">Unfollow</button>
       </section>
     </mat-card-actions>
     <mat-divider></mat-divider>

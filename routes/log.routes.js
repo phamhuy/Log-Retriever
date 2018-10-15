@@ -18,6 +18,8 @@ const conns = serverNames.reduce((result, server) => {
   return result;
 }, {})
 
+let prevStream = null;
+
 // Init connections
 for (let serverName in conns) {
   const conn = conns[serverName];
@@ -55,7 +57,7 @@ module.exports = app => {
         res.send(err.message);
         return;
       }
-      stream.on('data', data => {
+      stream.once('data', data => {
         res.send(data);
       })
     });
@@ -70,7 +72,7 @@ module.exports = app => {
     // Run the command on the given server
     conn.exec(cmd, (err, stream) => {
       if (err) {
-        console.log('error =', err.message);
+        res.send(err.message);
         return;
       }
 
@@ -86,6 +88,6 @@ module.exports = app => {
   app.get('/api/stopLog/:serverName', (req, res) => {
     const conn = conns[req.params.serverName];
     conn.emit('unfollow');
-    res.send('OK');
+    res.end();
   });
 }

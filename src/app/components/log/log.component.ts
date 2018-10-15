@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
-import { Subscription } from 'rxjs';
 import { Server } from '@models';
 
 @Component({
@@ -14,9 +13,9 @@ export class LogComponent implements OnInit {
   @ViewChild('logBox') logBox: ElementRef
 
   form: FormGroup;
-  logSub: Subscription;
   servers: Server[];
   logTypes: string[];
+  following: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,8 +26,7 @@ export class LogComponent implements OnInit {
   ngOnInit() {
     // Build form
     this.form = this.fb.group({
-      serverSelect: '',
-      follow: false
+      serverSelect: ''
     })
     for (let logType of this.logService.logTypes) {
       this.form.addControl(logType, this.fb.control(true));
@@ -50,28 +48,23 @@ export class LogComponent implements OnInit {
     return this.form.get('serverSelect') as FormControl;
   }
 
-  get follow() {
-    return this.form.get('follow') as FormControl;
+  getLog() {
+    this.logService.getLog(this.serverSelect.value).subscribe(res => {
+      this.logBox.nativeElement.innerHTML = res;
+    });
   }
 
-  getLog() {
-    if (this.follow.value) { // If follow is checked
-      this.logSub = this.logService.followLog(this.serverSelect.value).subscribe(res => {
-        this.logBox.nativeElement.innerHTML = res;
-        this.logBox.nativeElement.focus();
-        // console.log('length =', this.logBox.nativeElement.value.length);
-      });
-    } else { // If follow is unchecked
-      if (this.logSub) { // If unchecking follow
-        this.logSub.unsubscribe();
-        this.logSub = null;
-        this.logService.stopLog(this.serverSelect.value).subscribe(null);
-      } else { // If changing the server only
-        this.logService.getLog(this.serverSelect.value).subscribe(res => {
-          this.logBox.nativeElement.innerHTML = res;
-        });
-      }
-    }
+  followLog() {
+    this.logService.followLog(this.serverSelect.value).subscribe(res => {
+      this.following = true;
+      this.logBox.nativeElement.innerHTML = res;
+    });
+  }
+
+  unfollowLog() {
+    this.logService.stopLog(this.serverSelect.value).subscribe(res => {
+      this.following = false;
+    });
   }
 
 }
