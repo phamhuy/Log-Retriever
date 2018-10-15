@@ -6,85 +6,86 @@ const passphrase = 'logger';
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
 
-let conn = new Client();
+// Define servers and connections
+const serverNames = [
+  'app-sti',
+  'app-sti2',
+  'qa-sti'
+]
+
+const conns = serverNames.reduce((result, server) => {
+  result[server] = (new Client());
+  return result;
+}, {})
+
+// Init connections
+for (let serverName in conns) {
+  const conn = conns[serverName];
+
+  // On ready event
+  conn.on('ready', () => {
+    console.log(`Connected to ${serverName} successfully`);
+  });
+
+  // On end event
+  conn.on('end', () => {
+    console.log(`Disconnected to ${serverName} successfully`);
+  })
+
+  // Connect to the server
+  console.log(`Connecting to server ${serverName}`);
+  conn.connect({
+    host: `${serverName}.${serverDomain}`,
+    username: username,
+    passphrase: passphrase,
+    privateKey: require('fs').readFileSync(logger_rsa)
+  });
+}
 
 module.exports = app => {
   app.get('/api/getLog/:serverName', (req, res) => {
-    const serverName = req.params.serverName;
+    const conn = conns[req.params.serverName];
 
-    // Define function for ready event
-    conn = conn.once('ready', () => {
-      console.log(`Connected to ${serverName} successfully`);
+    // Define command to be run on the given server
+    let cmd = `tail -n 50 ${filename}`;
 
-      // Define command to be run on the given server
-      let cmd = `tail ${filename}`;
-
-      // Run the command on the given server
-      conn.exec(cmd, (err, stream) => {
-        if (err) {
-          console.log('error =', err.message);
-          return;
-        }
-        stream.on('data', data => {
-          res.send(data);
-          conn.end();
-          console.log(`Disconnected to ${serverName} successfully`);
-        })
-      });
-    });
-
-    // Connect to the server
-    console.log(`Connecting to server ${serverName}`);
-    conn.connect({
-      host: `${serverName}.${serverDomain}`,
-      username: username,
-      passphrase: passphrase,
-      privateKey: require('fs').readFileSync(logger_rsa)
+    // Run the command on the given server
+    conn.exec(cmd, (err, stream) => {
+      if (err) {
+        res.send(err.message);
+        return;
+      }
+      stream.on('data', data => {
+        res.send(data);
+      })
     });
   });
 
   app.get('/api/followLog/:serverName', (req, res) => {
-    const serverName = req.params.serverName;
+    const conn = conns[req.params.serverName];
 
-    // Define function for ready event
-    conn = conn.once('ready', () => {
-      console.log(`Connected to ${serverName} successfully`);
+    // Define command to be run on the given server
+    let cmd = `tail -n 50 -f ${filename}`;
 
-      // Define command to be run on the given server
-      let cmd = `tail -f ${filename}`;
+    // Run the command on the given server
+    conn.exec(cmd, (err, stream) => {
+      if (err) {
+        console.log('error =', err.message);
+        return;
+      }
 
-      // Run the command on the given server
-      conn.exec(cmd, (err, stream) => {
-        if (err) {
-          console.log('error =', err.message);
-          return;
-        }
-
-        stream.stdout.pipe(res);
-        // stream.on('data', data => {
-        //   (new Buffer(data, 'base64')).pipe(res);
-        // })
-      });
+      stream.stdout.pipe(res);
     });
 
-    // Define function for end event
-    conn = conn.once('end', () => {
-      // res.end();
-      console.log(`Disconnected to ${serverName} successfully`);
-    });
-
-    // Connect to the server
-    console.log(`Connecting to server ${serverName}`);
-    conn.connect({
-      host: `${serverName}.${serverDomain}`,
-      username: username,
-      passphrase: passphrase,
-      privateKey: require('fs').readFileSync(logger_rsa)
+    // Define function for unfollow event
+    conn.once('unfollow', () => {
+      res.end();
     });
   });
 
   app.get('/api/stopLog/:serverName', (req, res) => {
-    conn.end();
-    res.end();
+    const conn = conns[req.params.serverName];
+    conn.emit('unfollow');
+    res.send('OK');
   });
 }
