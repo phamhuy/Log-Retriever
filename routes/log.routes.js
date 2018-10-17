@@ -61,9 +61,12 @@ module.exports = app => {
         res.send(err.message);
         return;
       }
-      stream.once('data', data => {
-        res.send(data);
-      })
+      stream.on('data', data => {
+        res.write(data);
+      });
+      stream.on('close', () => {
+        res.end();
+      });
     });
   });
 
