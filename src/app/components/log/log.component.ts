@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
 import { Server } from '@models';
-import { MatSnackBar, MatCardContent } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -52,6 +52,16 @@ export class LogComponent implements OnInit {
     return this.form.get('serverSelect') as FormControl;
   }
 
+  get flags() {
+    const flags = [];
+    for (let flag in this.form.value) {
+      if (this.form.value[flag] === false) {
+        flags.push(flag);
+      }
+    }
+    return flags;
+  }
+
   onChangeServer() {
     if (this.following) {
       this.unfollowLog();
@@ -66,7 +76,7 @@ export class LogComponent implements OnInit {
   }
 
   getLog() {
-    this.logService.getLog(this.serverSelect.value).subscribe(res => {
+    this.logService.getLog(this.serverSelect.value, this.flags).subscribe(res => {
       this.updateLogContent(res);
 
       // Notify user
@@ -76,7 +86,7 @@ export class LogComponent implements OnInit {
 
   followLog() {
     this.following = true;
-    this.fowlloSubscription = this.logService.followLog(this.serverSelect.value).subscribe(res => {
+    this.fowlloSubscription = this.logService.followLog(this.serverSelect.value, this.flags).subscribe(res => {
       this.updateLogContent(res);
     });
 

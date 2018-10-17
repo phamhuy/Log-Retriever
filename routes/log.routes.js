@@ -6,7 +6,7 @@ const passphrase = 'logger';
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
 
-const LOG_SIZE = 100;
+const LOG_SIZE = 30;
 
 // Define servers and connections
 const serverNames = [
@@ -45,11 +45,15 @@ for (let serverName in conns) {
 }
 
 module.exports = app => {
-  app.get('/api/getLog/:serverName', (req, res) => {
+  app.get('/api/getLog/:serverName/:flags?', (req, res) => {
     const conn = conns[req.params.serverName];
+    const flags = req.params.flags ? req.params.flags.split(',') : [];
 
     // Define command to be run on the given server
     let cmd = `tail -n ${LOG_SIZE} ${filename}`;
+    for (let flag of flags) {
+      cmd += ` | grep -v ${flag}`;
+    }
 
     // Run the command on the given server
     conn.exec(cmd, (err, stream) => {
@@ -63,11 +67,15 @@ module.exports = app => {
     });
   });
 
-  app.get('/api/followLog/:serverName', (req, res) => {
+  app.get('/api/followLog/:serverName/:flags?', (req, res) => {
     const conn = conns[req.params.serverName];
+    const flags = req.params.flags ? req.params.flags.split(',') : [];
 
     // Define command to be run on the given server
     let cmd = `tail -n ${LOG_SIZE} -f ${filename}`;
+    for (let flag of flags) {
+      cmd += ` | grep -v ${flag}`;
+    }
 
     // Run the command on the given server
     conn.exec(cmd, (err, stream) => {

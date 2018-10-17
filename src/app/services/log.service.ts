@@ -26,11 +26,11 @@ export class LogService {
     ]
   }
 
-  getLog(serverName): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/getLog/${serverName}`, {responseType: 'text'});
+  getLog(serverName, flags: string[]): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/getLog/${serverName}/${flags}`, {responseType: 'text'});
   }
 
-  followLog(serverName): Observable<any> {
+  followLog(serverName, flags: string[]): Observable<any> {
     const observer = new Subject();
     const xhttp = new XMLHttpRequest();
 
@@ -39,7 +39,7 @@ export class LogService {
         observer.next(xhttp.responseText);
       }
     }
-    xhttp.open('GET', `${this.baseUrl}/api/followLog/${serverName}`);
+    xhttp.open('GET', `${this.baseUrl}/api/followLog/${serverName}/${flags}`);
     xhttp.send();
 
     return observer.asObservable();
