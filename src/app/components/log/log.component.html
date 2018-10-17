@@ -14,7 +14,7 @@
 
       <!-- Follow Checkbox -->
       <section>
-        <button mat-raised-button color="primary" (click)="update()">Update</button>
+        <!-- <button mat-raised-button color="primary" (click)="updateLogContent('')">Update</button> -->
         <button mat-raised-button color="primary" (click)="getLog()" [disabled]="following">Get Log</button>
         <button *ngIf="!following" mat-raised-button color="primary" (click)="followLog()">Follow</button>
         <button *ngIf="following" mat-raised-button color="accent" (click)="unfollowLog()">Unfollow</button>
@@ -24,6 +24,7 @@
 
     <!-- Log Textbox -->
     <mat-card-content #logBox>
+      <p #logContent></p>
     </mat-card-content>
   </form>
 </mat-card>

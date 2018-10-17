@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class LogComponent implements OnInit {
   @ViewChild('logBox') logBox: ElementRef;
+  @ViewChild('logContent') logContent: ElementRef;
 
   form: FormGroup;
   servers: Server[];
@@ -70,9 +71,10 @@ export class LogComponent implements OnInit {
   }
 
   updateLogContent(newContent) {
-    const contentElement = <HTMLElement> this.logBox.nativeElement;
-    contentElement.innerHTML = newContent;
-    contentElement.scrollTop = contentElement.scrollHeight;
+    const logContent = <HTMLParagraphElement> this.logContent.nativeElement;
+    const logBox = <HTMLElement> this.logBox.nativeElement
+    logContent.innerHTML = newContent;
+    logBox.scrollTop = logBox.scrollHeight;
   }
 
   getLog() {
