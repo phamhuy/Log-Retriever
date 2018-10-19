@@ -23,11 +23,11 @@ section {
 }
 
 mat-card-content {
-  padding-top: 1em;
   overflow: auto;
   height: 65vh;
 }
 
 p {
   white-space: pre;
+  margin: 1em;
 }
