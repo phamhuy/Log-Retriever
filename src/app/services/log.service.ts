@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Server } from '@models';
 import { Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +10,14 @@ import { HttpClient } from '@angular/common/http';
 export class LogService {
   servers: Server[];
   logTypes: string[];
-  baseUrl: string = 'http://localhost:5000';
+  baseUrl: string = environment.baseUrl;
 
   constructor(private http: HttpClient) {
     this.servers = [
       { name: 'app-sti', url: '' },
       { name: 'app-sti2', url: '' },
-      { name: 'qa-sti', url: '' }
+      { name: 'qa-sti', url: '' },
+      {name: 'localhost', url: ''}
     ]
 
     this.logTypes = [

@@ -1,22 +1,22 @@
 const Client = require('ssh2').Client;
 
-const filename = '/sw/logs/tomcat/catalina.out';
 const username = 'logger';
 const passphrase = 'logger';
+const password = passphrase;
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
-
 const LOG_SIZE = 100;
 
 // Define servers and connections
 const serverNames = [
   'app-sti',
   'app-sti2',
-  'qa-sti'
+  'qa-sti',
+  'localhost'
 ]
 
 const conns = serverNames.reduce((result, server) => {
-  result[server] = (new Client());
+  result[server] = new Client();
   return result;
 }, {})
 
@@ -29,6 +29,11 @@ for (let serverName in conns) {
     console.log(`Connected to ${serverName} successfully`);
   });
 
+  // On error event
+  conn.on('error', () => {
+    console.log(`Failed to connect to ${serverName}`);
+  });
+
   // On end event
   conn.on('end', () => {
     console.log(`Disconnected to ${serverName} successfully`);
@@ -36,18 +41,28 @@ for (let serverName in conns) {
 
   // Connect to the server
   console.log(`Connecting to server ${serverName}`);
-  conn.connect({
-    host: `${serverName}.${serverDomain}`,
-    username: username,
-    passphrase: passphrase,
-    privateKey: require('fs').readFileSync(logger_rsa)
-  });
+  if (serverName != 'localhost') {
+    conn.connect({
+      host: `${serverName}.${serverDomain}`,
+      username: username,
+      passphrase: passphrase,
+      privateKey: require('fs').readFileSync(logger_rsa),
+    });
+  } else {
+    conn.connect({
+      host: serverName,
+      username: username,
+      password: password
+    });
+  }
 }
 
 module.exports = app => {
   app.get('/api/getLog/:serverName/:flags?', (req, res) => {
-    const conn = conns[req.params.serverName];
+    const serverName = req.params.serverName;
+    const conn = conns[serverName];
     const flags = req.params.flags ? req.params.flags.split(',') : [];
+    let filename = serverName == 'localhost' ? 'log' : '/sw/logs/tomcat/catalina.out';
 
     // Define command to be run on the given server
     let cmd = `tail -n ${LOG_SIZE} ${filename}`;
@@ -73,6 +88,7 @@ module.exports = app => {
   app.get('/api/followLog/:serverName/:flags?', (req, res) => {
     const conn = conns[req.params.serverName];
     const flags = req.params.flags ? req.params.flags.split(',') : [];
+    let filename = serverName == 'localhost' ? 'log' : '/sw/logs/tomcat/catalina.out';
 
     // Define command to be run on the given server
     let cmd = `tail -n ${LOG_SIZE} -f ${filename}`;
@@ -89,7 +105,7 @@ module.exports = app => {
 
       try {
         stream.stdout.pipe(res);
-      } catch(err) {
+      } catch (err) {
         res.end();
       }
     });
