@@ -17,7 +17,7 @@ export class LogService {
       { name: 'app-sti', url: '' },
       { name: 'app-sti2', url: '' },
       { name: 'qa-sti', url: '' },
-      {name: 'localhost', url: ''}
+      // {name: 'localhost', url: ''}
     ]
 
     this.logTypes = [

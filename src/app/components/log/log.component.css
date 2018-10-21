@@ -25,10 +25,10 @@ section {
 
 mat-card-content {
   overflow: auto;
-  height: 65vh;
+  height: 60vh;
 }
 
 p {
   white-space: pre;
-  margin: 1em;
+  margin: 1em !important;
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { LogService } from '@services';
 import { Server } from '@models';
@@ -23,6 +23,7 @@ export class LogComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private logService: LogService,
     private snackBar: MatSnackBar
@@ -68,6 +69,7 @@ export class LogComponent implements OnInit {
       this.unfollowLog();
     }
     this.getLog();
+    this.router.navigate([`/log/${this.serverSelect.value}`]);
   }
 
   updateLogContent(newContent) {

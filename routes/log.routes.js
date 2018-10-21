@@ -2,7 +2,7 @@ const Client = require('ssh2').Client;
 
 const username = 'logger';
 const passphrase = 'logger';
-const password = passphrase;
+const password = 'logger';
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
 const LOG_SIZE = 100;
@@ -22,8 +22,11 @@ const conns = serverNames.reduce((result, server) => {
 
 // Init connections
 for (let serverName in conns) {
-  const conn = conns[serverName];
+  connectServer(conns[serverName], serverName);
+}
 
+// A function to connect to a server
+function connectServer(conn, serverName) {
   // On ready event
   conn.on('ready', () => {
     console.log(`Connected to ${serverName} successfully`);
@@ -41,19 +44,23 @@ for (let serverName in conns) {
 
   // Connect to the server
   console.log(`Connecting to server ${serverName}`);
-  if (serverName != 'localhost') {
-    conn.connect({
-      host: `${serverName}.${serverDomain}`,
-      username: username,
-      passphrase: passphrase,
-      privateKey: require('fs').readFileSync(logger_rsa),
-    });
-  } else {
-    conn.connect({
-      host: serverName,
-      username: username,
-      password: password
-    });
+  try {
+    if (serverName != 'localhost') {
+      conn.connect({
+        host: `${serverName}.${serverDomain}`,
+        username: username,
+        passphrase: passphrase,
+        privateKey: require('fs').readFileSync(logger_rsa),
+      });
+    } else {
+      conn.connect({
+        host: serverName,
+        username: username,
+        password: password
+      });
+    }
+  } catch {
+    console.log(`Error connecting to ${serverName}`);
   }
 }
 
@@ -71,18 +78,25 @@ module.exports = app => {
     }
 
     // Run the command on the given server
-    conn.exec(cmd, (err, stream) => {
-      if (err) {
-        res.send(err.message);
-        return;
-      }
-      stream.on('data', data => {
-        res.write(data);
+    try {
+      conn.exec(cmd, (err, stream) => {
+        if (err) {
+          res.send(`Unable to get the log.\n${err.message}`);
+          console.log(`Unable to get the log.\n${err.message}`);
+          return;
+        }
+        stream.on('data', data => {
+          res.write(data);
+        });
+        stream.on('close', () => {
+          res.end();
+        });
       });
-      stream.on('close', () => {
-        res.end();
-      });
-    });
+    } catch (err) {
+      res.send(`Server ${serverName} is down. Please try again later...`);
+      console.log(`Server ${serverName} is down. Trying to reconnect...`);
+      connectServer(conn, serverName);
+    }
   });
 
   app.get('/api/followLog/:serverName/:flags?', (req, res) => {
@@ -97,23 +111,31 @@ module.exports = app => {
     }
 
     // Run the command on the given server
-    conn.exec(cmd, (err, stream) => {
-      if (err) {
-        res.send(err.message);
-        return;
-      }
+    try {
+      conn.exec(cmd, (err, stream) => {
+        if (err) {
+          res.send(`Unable to get the log.\n${err.message}`);
+          console.log(`Unable to get the log.\n${err.message}`);
+          return;
+        }
 
-      try {
-        stream.stdout.pipe(res);
-      } catch (err) {
-        res.end();
-      }
-    });
+        try {
+          stream.stdout.pipe(res);
+        } catch (err) {
+          res.end();
+        }
 
-    // Define function for unfollow event
-    conn.once('unfollow', () => {
-      res.end();
-    });
+        // Define function for unfollow event
+        conn.once('unfollow', () => {
+          res.end();
+        });
+      });
+    } catch (err) {
+      res.send(`Server ${serverName} is down. Please try again later...`);
+      console.log(`Server ${serverName} is down. Trying to reconnect...`);
+      connectServer(conn, serverName);
+    }
+
   });
 
   app.get('/api/stopLog/:serverName', (req, res) => {
