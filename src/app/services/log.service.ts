@@ -17,6 +17,7 @@ export class LogService {
       { name: 'app-sti', url: '' },
       { name: 'app-sti2', url: '' },
       { name: 'qa-sti', url: '' },
+      { name: 'sti-stg-lb', url: '' },
       // {name: 'localhost', url: ''}
     ]
 
