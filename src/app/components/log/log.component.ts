@@ -12,14 +12,11 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./log.component.css']
 })
 export class LogComponent implements OnInit {
-  @ViewChild('logBox') logBox: ElementRef;
-  @ViewChild('logContent') logContent: ElementRef;
-
   form: FormGroup;
   servers: Server[];
   logTypes: string[];
   following: boolean;
-  fowlloSubscription: Subscription;
+  fowlloSubscriptions: Subscription[];
 
   constructor(
     private route: ActivatedRoute,
@@ -44,14 +41,18 @@ export class LogComponent implements OnInit {
 
     // Set server name
     const serverName = this.route.snapshot.paramMap.get('serverName');
-    this.serverSelect.setValue(serverName);
+    this.selectedServer = this.servers.find(server => serverName == server.name);
 
     // Init the log content
     this.getLog();
   }
 
-  get serverSelect() {
-    return this.form.get('serverSelect') as FormControl;
+  get selectedServer() {
+    return this.form.get('serverSelect').value as Server;
+  }
+
+  set selectedServer(newServer) {
+    this.form.get('serverSelect').setValue(newServer);
   }
 
   get flags() {
@@ -69,43 +70,54 @@ export class LogComponent implements OnInit {
       this.unfollowLog();
     }
     this.getLog();
-    this.router.navigate([`/log/${this.serverSelect.value}`]);
+    this.router.navigate([`/log/${this.selectedServer.name}`]);
   }
 
-  updateLogContent(newContent) {
-    const logContent = <HTMLParagraphElement> this.logContent.nativeElement;
-    const logBox = <HTMLElement> this.logBox.nativeElement
+  updateLogContent(serverName, newContent) {
+    const logBox = document.getElementById(`log-box-${serverName}`)
+    const logContent = document.getElementById(`log-content-${serverName}`);
     logContent.innerHTML = newContent;
     logBox.scrollTop = logBox.scrollHeight;
   }
 
   getLog() {
-    this.logService.getLog(this.serverSelect.value, this.flags).subscribe(res => {
-      this.updateLogContent(res);
+    for (let serverName of this.selectedServer.serverNames) {
+      this.logService.getLog(serverName, this.flags).subscribe(res => {
+        this.updateLogContent(serverName, res);
 
-      // Notify user
-      this.snackBar.open('Get Log Successfully', null, { duration: 3000 });
-    });
+        // Notify user
+        this.snackBar.open('Get Log Successfully', null, { duration: 3000 });
+      });
+    }
   }
 
   followLog() {
     this.following = true;
-    this.fowlloSubscription = this.logService.followLog(this.serverSelect.value, this.flags).subscribe(res => {
-      this.updateLogContent(res);
-    });
+    this.fowlloSubscriptions = [];
+    for (let serverName of this.selectedServer.serverNames) {
+      const subscription = this.logService.followLog(serverName, this.flags).subscribe(res => {
+        this.updateLogContent(serverName, res);
+      });
+
+      this.fowlloSubscriptions.push(subscription);
+    }
 
     // Notify user
     this.snackBar.open('Following Log', null, { duration: 3000 });
   }
 
   unfollowLog() {
-    this.logService.stopLog(this.serverSelect.value).subscribe(res => {
-      this.following = false;
-      this.fowlloSubscription.unsubscribe();
+    for (let serverName of this.selectedServer.serverNames) {
+      this.logService.stopLog(serverName).subscribe(res => {
+        this.following = false;
+        for (let subscription of this.fowlloSubscriptions) {
+          subscription.unsubscribe();
+        }
 
-      // Notify user
-      this.snackBar.open('Unfollow Successfully', null, { duration: 3000 });
-    });
+        // Notify user
+        this.snackBar.open('Unfollow Successfully', null, { duration: 3000 });
+      });
+    }
   }
 
 }

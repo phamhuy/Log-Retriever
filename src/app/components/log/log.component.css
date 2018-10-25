@@ -24,8 +24,18 @@ section {
 }
 
 mat-card-content {
-  overflow: auto;
+  padding-top: 1em;
+  overflow: hidden;
   height: 60vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.log-content {
+  flex: 1 0 0;
+  height: 100%;
+  overflow: auto;
 }
 
 p {

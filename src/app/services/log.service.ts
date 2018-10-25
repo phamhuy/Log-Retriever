@@ -14,10 +14,10 @@ export class LogService {
 
   constructor(private http: HttpClient) {
     this.servers = [
-      { name: 'app-sti', url: '' },
-      { name: 'app-sti2', url: '' },
-      { name: 'qa-sti', url: '' },
-      { name: 'sti-stg-lb', url: '' },
+      { name: 'app-sti', serverNames: ['app-sti'] },
+      { name: 'app-sti2', serverNames: ['app-sti2'] },
+      { name: 'qa-sti', serverNames: ['qa-sti'] },
+      { name: 'sti-stg-lb', serverNames: ['sti-stg-app1', 'sti-stg-app2', 'sti-stg-app3'] },
       // {name: 'localhost', url: ''}
     ]
 
@@ -29,11 +29,11 @@ export class LogService {
     ]
   }
 
-  getLog(serverName, flags: string[]): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/getLog/${serverName}/${flags}`, {responseType: 'text'});
+  getLog(serverName: string, flags: string[]): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/getLog/${serverName}/${flags}`, { responseType: 'text' });
   }
 
-  followLog(serverName, flags: string[]): Observable<any> {
+  followLog(serverName: string, flags: string[]): Observable<any> {
     const observer = new Subject();
     const xhttp = new XMLHttpRequest();
 

@@ -5,7 +5,8 @@
       <!-- Select Server -->
       <mat-form-field>
         <mat-select formControlName="serverSelect" (selectionChange)="onChangeServer()">
-          <mat-option *ngFor="let server of servers" value="{{server.name}}">{{server.name}}</mat-option>
+          <mat-select-trigger>{{selectedServer.name}}</mat-select-trigger>
+          <mat-option *ngFor="let server of servers" [value]="server">{{server.name}}</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -23,8 +24,10 @@
     <mat-divider></mat-divider>
 
     <!-- Log Textbox -->
-    <mat-card-content #logBox>
-      <p #logContent></p>
+    <mat-card-content>
+      <div id="log-box-{{serverName}}" *ngFor="let serverName of selectedServer.serverNames" class="log-content">
+        <p id="log-content-{{serverName}}"></p>
+      </div>
     </mat-card-content>
   </form>
 </mat-card>

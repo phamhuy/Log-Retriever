@@ -13,7 +13,9 @@ const serverNames = [
   'app-sti2',
   'qa-sti',
   'localhost',
-  'sti-stg-lb'
+  'sti-stg-app1',
+  'sti-stg-app2',
+  'sti-stg-app3'
 ]
 
 const conns = serverNames.reduce((result, server) => {
