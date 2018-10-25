@@ -101,7 +101,8 @@ module.exports = app => {
   });
 
   app.get('/api/followLog/:serverName/:flags?', (req, res) => {
-    const conn = conns[req.params.serverName];
+    const serverName = req.params.serverName;
+    const conn = conns[serverName];
     const flags = req.params.flags ? req.params.flags.split(',') : [];
     let filename = serverName == 'localhost' ? 'log' : '/sw/logs/tomcat/catalina.out';
 
