@@ -18,6 +18,7 @@ export class LogService {
       { name: 'app-sti2', serverNames: ['app-sti2'] },
       { name: 'qa-sti', serverNames: ['qa-sti'] },
       { name: 'sti-stg-lb', serverNames: ['sti-stg-app1', 'sti-stg-app2', 'sti-stg-app3'] },
+      { name: 'sti-prod-lb', serverNames: ['sti-prod-app1', 'sti-prod-app2', 'sti-prod-app3'] },
       // {name: 'localhost', url: ''}
     ]
 
