@@ -26,7 +26,7 @@
     <!-- Log Textbox -->
     <mat-card-content>
       <div id="log-box-{{serverName}}" *ngFor="let serverName of selectedServer.serverNames" class="log-content">
-        <p id="log-content-{{serverName}}"></p>
+        <p id="log-content-{{serverName}}" contenteditable="true"></p>
       </div>
     </mat-card-content>
   </form>

@@ -5,7 +5,7 @@ const passphrase = 'logger';
 const password = 'logger';
 const serverDomain = 'objectbrains.com';
 const logger_rsa = '/Users/huypham/.ssh/logger_rsa';
-const LOG_SIZE = 100;
+const LOG_SIZE = 500;
 
 // Define servers and connections
 const serverNames = [
