@@ -71,6 +71,37 @@ function connectServer(conn, serverName) {
 }
 
 module.exports = app => {
+  app.get('/api/searchLog/:serverName/:searchTerms', (req, res) => {
+    const serverName = req.params.serverName;
+    const conn = conns[serverName];
+    const searchTerms = req.params.searchTerms;
+    let filename = serverName == 'localhost' ? 'log' : '/sw/logs/tomcat/catalina.out';
+
+    // Define command to be run on the given server
+    let cmd = `grep "${searchTerms}" ${filename}`;
+
+    // Run the command on the given server
+    try {
+      conn.exec(cmd, (err, stream) => {
+        if (err) {
+          res.send(`Unable to search the log.\n${err.message}`);
+          console.log(`Unable to search the log.\n${err.message}`);
+          return;
+        }
+        stream.on('data', data => {
+          res.write(data);
+        });
+        stream.on('close', () => {
+          res.end();
+        });
+      });
+    } catch (err) {
+      res.send(`Server ${serverName} is down. Please try again later...`);
+      console.log(`Server ${serverName} is down. Trying to reconnect...`);
+      connectServer(conn, serverName);
+    }
+  });
+
   app.get('/api/getLog/:serverName/:flags?', (req, res) => {
     const serverName = req.params.serverName;
     const conn = conns[serverName];

@@ -30,6 +30,10 @@ export class LogService {
     ]
   }
 
+  searchLog(serverName: string, searchTerms: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/api/searchLog/${serverName}/${searchTerms}`, { responseType: 'text' });
+  }
+
   getLog(serverName: string, flags: string[]): Observable<any> {
     return this.http.get(`${this.baseUrl}/api/getLog/${serverName}/${flags}`, { responseType: 'text' });
   }

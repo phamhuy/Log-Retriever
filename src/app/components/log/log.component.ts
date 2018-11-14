@@ -29,7 +29,8 @@ export class LogComponent implements OnInit {
   ngOnInit() {
     // Build form
     this.form = this.fb.group({
-      serverSelect: ''
+      serverSelect: '',
+      search: ''
     })
     for (let logType of this.logService.logTypes) {
       this.form.addControl(logType, this.fb.control(true));
@@ -78,6 +79,17 @@ export class LogComponent implements OnInit {
     const logContent = document.getElementById(`log-content-${serverName}`);
     logContent.innerHTML = newContent;
     logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  searchLog() {
+    for (let serverName of this.selectedServer.serverNames) {
+      this.logService.searchLog(serverName, this.form.get('search').value).subscribe(res => {
+        this.updateLogContent(serverName, res);
+
+        // Notify user
+        this.snackBar.open('Search Log Successfully', null, { duration: 3000 });
+      });
+    }
   }
 
   getLog() {

@@ -6,21 +6,34 @@ mat-card {
   overflow: hidden;
 }
 
-mat-card-actions {
+mat-card-action {
+  display: flex;
+  flex-direction: column;
+}
+
+.config {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
 mat-checkbox {
   margin: 2em;
 }
 
-section {
-  position: absolute;
-  right: 1em;
-  bottom: 0;
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.search-log {
+  margin: 0 1em;
+}
+
+.get-log {
+  align-self: baseline;
+  margin: 0 1em;
 }
 
 mat-card-content {
@@ -35,7 +48,8 @@ mat-card-content {
 .log-content {
   flex: 1 0 0;
   height: 100%;
-  overflow: auto;
+  overflow-y: scroll;
+  overflow-x: auto;
 }
 
 p {

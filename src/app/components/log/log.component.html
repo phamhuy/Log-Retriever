@@ -1,25 +1,40 @@
 <mat-card class="mat-elevation-z3">
-  <form [formGroup]="form">
+  <form [formGroup]="form" (ngSubmit)="searchLog()">
     <!-- Log Config -->
     <mat-card-actions>
-      <!-- Select Server -->
-      <mat-form-field>
-        <mat-select formControlName="serverSelect" (selectionChange)="onChangeServer()">
-          <mat-select-trigger>{{selectedServer.name}}</mat-select-trigger>
-          <mat-option *ngFor="let server of servers" [value]="server">{{server.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="config">
+        <!-- Select Server -->
+        <mat-form-field>
+          <mat-select formControlName="serverSelect" (selectionChange)="onChangeServer()">
+            <mat-select-trigger>{{selectedServer.name}}</mat-select-trigger>
+            <mat-option *ngFor="let server of servers" [value]="server">{{server.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <!-- Select Log Types -->
-      <mat-checkbox *ngFor="let logType of logTypes" formControlName="{{logType}}">{{logType}}</mat-checkbox>
+        <!-- Select Log Types -->
+        <mat-checkbox *ngFor="let logType of logTypes" formControlName="{{logType}}">{{logType}}</mat-checkbox>
+      </div>
 
-      <!-- Follow Checkbox -->
-      <section>
-        <!-- <button mat-raised-button color="primary" (click)="updateLogContent('')">Update</button> -->
-        <button mat-raised-button color="primary" (click)="getLog()" [disabled]="following">Get Log</button>
-        <button *ngIf="!following" mat-raised-button color="primary" (click)="followLog()">Follow</button>
-        <button *ngIf="following" mat-raised-button color="accent" (click)="unfollowLog()">Unfollow</button>
-      </section>
+      <!-- Search Logs -->
+      <div class="actions">
+        <div class="search-log">
+          <mat-form-field>
+            <span matPrefix>
+              <mat-icon style="vertical-align: sub;" color="primary">search</mat-icon>
+              &nbsp;
+            </span>
+            <input matInput placeholder="Search" formControlName="search">
+          </mat-form-field>
+          <button type="submit" mat-raised-button color="primary" (click)="searchLog()" [disabled]="following">Search</button>
+        </div>
+
+        <!-- Get Logs -->
+        <div class="get-log">
+          <button type="button" mat-raised-button color="primary" (click)="getLog()" [disabled]="following">Get Log</button>
+          <button type="button" *ngIf="!following" mat-raised-button color="primary" (click)="followLog()">Follow</button>
+          <button type="button" *ngIf="following" mat-raised-button color="accent" (click)="unfollowLog()">Unfollow</button>
+        </div>
+      </div>
     </mat-card-actions>
     <mat-divider></mat-divider>
 
