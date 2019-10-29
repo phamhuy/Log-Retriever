@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { LogService } from '@services';
-import { Server } from '@models';
+import { SynonymsGeneratorService } from '@services';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -9,19 +8,26 @@ import { Server } from '@models';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  servers: Server[];
+  form: FormGroup;
+  synonyms: string[];
 
   constructor(
-    private router: Router,
-    private logService: LogService
+    private synonymsGeneratorService: SynonymsGeneratorService,
+    private fb: FormBuilder
     ) { }
 
   ngOnInit() {
-    this.servers = this.logService.servers;
+    this.form = this.fb.group({
+      gamerHandle: 'staypuft',
+    });
   }
 
-  onClick(serverName: string) {
-    this.router.navigate([`/log/${serverName}`]);
+  onSubmit() {
+    const gamerHandle: string = this.form.get('gamerHandle').value;
+    this.synonymsGeneratorService.generateSynonyms(gamerHandle).subscribe(res => {
+      this.synonyms = res.synonyms;
+      console.log(this.synonyms);
+    });
   }
 
 }

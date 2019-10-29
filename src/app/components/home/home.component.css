@@ -1,6 +1,17 @@
 .center {
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.left-align {
+  flex-direction: column;
+  display: flex;
+}
+
+mat-list {
+  height: 75vh;
+  overflow: scroll;
 }
 
 button {

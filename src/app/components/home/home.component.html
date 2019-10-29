@@ -1,3 +1,19 @@
 <div class="center">
-  <button *ngFor="let server of servers" mat-raised-button (click)="onClick(server.name)">{{server.name}}</button>
+  <div class="left-align">
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field>
+        <input formControlName="gamerHandle" matInput placeholder="Gamer Handle">
+      </mat-form-field>
+      <button tupe="submit" mat-raised-button color="primary" (click)="onSubmit()">Generate</button>
+    </form>
+
+    <!-- Generated Synonyms -->
+    <mat-list role="list" class="mat-elevation-z2">
+      <ng-container *ngFor="let synonym of synonyms">
+        <mat-list-item role="listitem">{{synonym}}</mat-list-item>
+        <mat-divider></mat-divider>
+      </ng-container>
+    </mat-list>
+  </div>
 </div>

@@ -10,7 +10,7 @@ app.use(function(req, res, next) {
 
 // Routes
 // require('./routes/log.routes')(app);
-require('./routes/hello.routes')(app);
+// require('./routes/hello.routes')(app);
 
 // Render
 const path = require('path');
