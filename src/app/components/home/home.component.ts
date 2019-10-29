@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      gamerHandle: 'staypuft',
+      gamerHandle: '',
     });
   }
 

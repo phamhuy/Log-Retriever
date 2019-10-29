@@ -3,7 +3,7 @@
     <!-- Form -->
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <mat-form-field>
-        <input formControlName="gamerHandle" matInput placeholder="Gamer Handle">
+        <input autofocus="true" formControlName="gamerHandle" matInput placeholder="Gamer Handle">
       </mat-form-field>
       <button tupe="submit" mat-raised-button color="primary" (click)="onSubmit()">Generate</button>
     </form>
