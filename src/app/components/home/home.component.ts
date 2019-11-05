@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
 
   onSubmit() {
     const gamerHandle: string = this.form.get('gamerHandle').value;
+    console.log('generating synonyms for', gamerHandle);
     this.synonymsGeneratorService.generateSynonyms(gamerHandle).subscribe(res => {
       this.synonyms = res.synonyms;
       console.log(this.synonyms);
