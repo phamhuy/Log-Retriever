@@ -13,7 +13,10 @@ export class SynonymsGeneratorService {
   }
 
   generateSynonyms(gamerHandle: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/${gamerHandle}/synonyms`);
+    const body = {
+      gamerHandle: gamerHandle
+    }
+    return this.http.post(`${this.baseUrl}/synonyms`, body);
   }
 
 }
